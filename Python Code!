@@ -1,0 +1,159 @@
+import random
+
+def get_masked_word(word):
+    ''' Function to get a masked word from a word (drops ~50% of letters)
+    e.g. "CAVIAR" -> "C-V--R"; "UNICORN" -> "U-IC-R-"
+    input: the word as a string
+    output: the masked word (as a string) and a
+      dictionary of masked letters with their position in the word.
+    Example: get_masked_word("UNICORN") can return the tuple
+    ('U-IC---', {'N': [1, 6], 'O': [4], 'R': [5]})
+    '''
+    # Get unique letters in the word
+    unique_letters_list = list(set(word)) # set() finds unique elements in string
+    # Shuffling the list of unique letters
+    random.shuffle(unique_letters_list)
+    # Selecting just 50% of the letters
+    split_point = len(unique_letters_list) // 2
+    letters_to_mask_list = unique_letters_list[0:split_point]
+    # Creating the masked word and the dictionary
+    masked_word = ""
+    masked_letter_position_dict = {}
+    for letter_position, letter in enumerate(word):
+        if(letter in letters_to_mask_list):
+            masked_word = masked_word + "-"
+            # We store the position of the masked letter in a dictionary
+            if(letter in masked_letter_position_dict):
+                # If the letter is in the dictionary we append the position
+                masked_letter_position_dict[letter].append(letter_position)
+            else:
+                # If the letter is NOT in the dictionary we create the entry (a list)
+                masked_letter_position_dict[letter] = [letter_position]
+        else:
+            masked_word = masked_word + letter        
+    # Finished, let's return the masked letters and the
+    # dictionary containinng the position of the masked letters.
+    return masked_word, masked_letter_position_dict
+
+
+#1. Define an empty dictionary for storing the dropped letters
+    # This dictionary will use the letter as key, and a list of positions as value.
+    # e.g. {"a": [1,3], "d": 2} means that the letter a is in position 1 and 3 in the word.
+    
+    #2. Iterate on the input word with a for-loop
+    # Per each letter trow a coin (random number included in [0, 1], 50%)
+    
+    #3. If the random number is less than 0.5 keep the word,
+    # if it is higher that 0.5 mask the letter and add its position in the dictionary.
+    
+    #4. When the for loop is finished return the masked word
+    # and the dictionary of masked letters.
+
+
+#0. Define a variable for the game score, e.g. score=3
+# where 3 is the maximum number of attempts for guessing the word (score==0 the user lost)
+
+score = 3
+
+print("Your score =", + score)
+
+#1. Load all the available words in memory (by reading them from a text file, or hard-coding them)
+# You can encapsulate this piece of code in the function called load_words_list() above
+
+file_text = open("/Users/camilahinojosa/Desktop/python/idk.text", "r")
+
+the_list = file_text.readlines()
+
+new_list = [x[:-1] for x in the_list]
+
+#print(new_list)
+
+#2. Pick a random word from all the available words.
+# You can encapsulate this code into the function called get_random_word() above.
+
+import random
+
+a = the_list
+
+#3. Turn the letters in the word into capital letters, search for the default method .upper()
+
+random_word = random.choice(a)
+
+#print(random_word.upper())
+
+#4. Produce a masked version of the word (hide some letters).
+# Write the code for the function get_masked_word().
+# For example if the word is PENCIL the function get_masked_word() 
+# returns something like P-N-I- or -EN-I- and a dictionary of the masked letters.
+# The dictionary will use the masked letter as key, and a list of positions as value.
+# e.g. {"a": [1,3], "d": 2} means that the letter "a" is in position 1 and 3 in the word.
+
+
+word = random_word.upper()
+
+masked_word,masked_letter_dictionary = get_masked_word(word)
+
+
+for round in range(10):
+    #5. Print on screen the masked word and ask the user to 
+    # type a letter in the terminal, you can use the default method input()
+
+    print(masked_word)
+
+    print("Guess any letter!")
+
+    persons_input = input()
+
+    #6. You need to check if the user provided more than one letter.
+    # Consider just the first character and discard the rest.
+
+    #while True:
+      #  persons_input = input()
+      #  if persons_input.isalpha():
+        #    break
+
+    if len(persons_input) > 1:
+        print("Only one letter and NO NUMBERS! Please :)")
+    
+    #7. Turn the character provided by the user into a capital letter
+
+    #print(persons_input.upper())
+
+    persons_input = persons_input.upper()
+
+
+    #8. Check if the letter provided by the user is a good one or a bad one.
+    # - First, check if the letter is already visible (the user did a mistake), decrease the score.
+    # - Second, if the letter is in the dictionary of masked letters, the user did a good choice 
+    #     (now you need to make those letters visible and remove the letter from the dictionary).
+    # - Third, the letter is neither in the visible letters, nor in the masked letters, decrease the score.
+
+    if persons_input in masked_letter_dictionary:
+        print("Good!")
+        letter_position_list = masked_letter_dictionary[persons_input]
+        for position in letter_position_list:
+            tmp_list = list(masked_word)
+            tmp_list[position] = persons_input
+            masked_word = "".join(tmp_list)
+            #masked_letter_dictionary.remove(persons_input)
+
+        #print(masked_word)  
+
+    else:
+        score = score-1
+        print("Incorrect! Try again!")
+        print("Your score =", + score)
+
+    #for count, persons_input in enumerate(masked_letter_dictionary):
+        #print(count, masked_letter_dictionary)
+    
+
+    #9. Print the current user score, the masked word, and the list of letters already tried.
+    if masked_word == word:
+        print("You Won!")
+        break
+
+    if score == 0:
+        print("You Lost! Try Again!")
+        break
+
